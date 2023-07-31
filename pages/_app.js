@@ -2,6 +2,7 @@ import Context from "../context/Context";
 import Layouts from "../layouts/Layouts";
 import "../styles/globals.css";
 import axios from 'axios'
+import { WhatsAppBtn } from '@mozeyinedu/react-lab'
 import ScrollToTop from "react-scroll-to-top";
 import NextProgress from 'nextjs-progressbar';
 import Head from 'next/head'
@@ -20,6 +21,7 @@ function MyApp({ Component, pageProps }) {
         <title>VTU</title>
       </Head>
       <ScrollToTop smooth color="var(--major-color-purest)" style={{ background: 'rgba(0,0,0,.2)' }} />
+      <WhatsAppBtn mobile="08033333333" size="50px" />
 
       <NextProgress options={{ showSpinner: false }} />
       <div className="max-w-[var(--xxlg)] m-auto bg-white">

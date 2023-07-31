@@ -1,5 +1,4 @@
 import React, { useEffect, useContext } from 'react'
-import { WhatsAppBtn } from '@mozeyinedu/react-lab'
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie'
 import Cpanel from './Cpanel';
@@ -67,8 +66,6 @@ function DefaultLayout({ children, contact }) {
                     {children}
                 </div>
             </div>
-
-            <WhatsAppBtn mobile="08033333333" size="50px"/>
 
             {/* footer */}
             <div className='h-[50px] text-[.7rem] text-color-blue-4'>

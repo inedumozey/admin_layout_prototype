@@ -1,3 +1,4 @@
-## Admin Dashboard Layout Prototype
-## Control Panel Layout Prototype
-## User dashboard layout prototype
+# CONTROL PANEL
+
+### Milestone
+* Made the control panel layout

@@ -271,10 +271,12 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
-"@mozeyinedu/react-lab@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.npmjs.org/@mozeyinedu/react-lab/-/react-lab-0.2.2.tgz"
-  integrity sha512-4WZDDCoSBuEi7KvzVg6flQAv2mT1XqIhz1raFgiCKM3pOAL1wC+dfu8OTA9Q/EpAWU2APFpyFvos/VHKcxKWAQ==
+"@mozeyinedu/react-lab@^0.2.1":
+  version "0.2.1"
+  resolved "https://registry.npmjs.org/@mozeyinedu/react-lab/-/react-lab-0.2.1.tgz"
+  integrity sha512-ONDIynKLI540TKga0vlnk1lLMsdUhUPaZlUvV5E+hnvh30ASANVjKdwb3RN+Ky41ZrPd5x+f0hiDE1Be6ArLSQ==
+  dependencies:
+    react-icons "^4.10.1"
 
 "@mui/base@5.0.0-beta.6":
   version "5.0.0-beta.6"
@@ -2510,6 +2512,11 @@ queue-microtask@^1.2.2:
     loose-envify "^1.1.0"
     scheduler "^0.23.0"
 
+react-icons@^4.10.1:
+  version "4.10.1"
+  resolved "https://registry.npmjs.org/react-icons/-/react-icons-4.10.1.tgz"
+  integrity sha512-/ngzDP/77tlCfqthiiGNZeYFACw85fUjZtLbedmJ5DTlNDIwETxhwBzdOJ21zj4iJdvc0J3y7yOsX3PpxAJzrw==
+
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"
   resolved "https://registry.npmjs.org/react-is/-/react-is-16.13.1.tgz"
@@ -2535,7 +2542,7 @@ react-transition-group@^4.4.5:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-"react@^16.8 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || 17.x || ^18", "react@^17.0.0 || ^18.0.0", react@^18.2.0, "react@>= 16.0.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16.6.0, react@>=16.8.0, react@18.2.0:
+react@*, "react@^16.8 || ^17 || ^18", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.0 || 17.x || ^18", "react@^17.0.0 || ^18.0.0", react@^18.2.0, "react@>= 16.0.0", "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", react@>=16.6.0, react@>=16.8.0, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==

@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link'
+import React, { useState } from 'react';
 import { useRouter } from "next/router";
+import styled from 'styled-components';
 import LockIcon from '@mui/icons-material/Lock';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
-import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import Btn from '../../utils/components/Btn';
 import axios from 'axios'
-import Spinner from '../utils/Spinner';
-import Alart from '../utils/Alart';
+import Spinner from '../../utils/components/Spinner';
+import Alart from '../../utils/components/Alart';
+import apiClass from '../../utils/data/api';
+import { Form, InputWrapper, InputIcon, Title } from '../../styles/globalStyles';
 
+const api = new apiClass()
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 export default function VerifyForgotPassword() {
@@ -16,26 +19,39 @@ export default function VerifyForgotPassword() {
     const [showPassword, setShowPassword] = useState(false);
     const [showCPassword, setShowCPassword] = useState(false);
     const [sending, setSending] = useState(false);
-    const [keydown, setKeydown] = useState(false);
     const [msg, setMsg] = useState({ msg: '', status: false });
 
     const [password, setPassword] = useState("");
     const [cpassword, setCPassword] = useState("");
+
+    const { token } = router.query;
 
     // submit form
     const submit = async (e) => {
         e.preventDefault();
 
         setSending(true)
+        const data_ = { cpassword, password }
+
         try {
-            const { data } = await axios.post(`${BASE_URL}/auth/admin/verify-forgot-password?token=${router.query.token}`, { cpassword, password, });
+            const { data } = await axios.put(`${BASE_URL}/auth/verify-forgot-password/?token=${token}`, { ...data_ });
 
             setSending(false);
 
+            // redirect
+            if (!data.isVerified) {
+                router.push('/auth/email-verification-required')
+
+                // save user email on local storage incase he wants to resend link
+                localStorage.setItem('email', data.email)
+            } else {
+                router.push('/dashboard')
+            }
+
             setMsg({ msg: data.msg, status: true })
             // clear input
-            setPassword("");
-            setCPassword("");
+            setPassword("")
+            setCPassword("")
         }
         catch (err) {
             if (err.response) {
@@ -44,87 +60,71 @@ export default function VerifyForgotPassword() {
             else {
                 setMsg({ msg: err.message, status: false })
             }
+
             setSending(false);
         }
     }
 
     return (
-        <form onSubmit={submit} className='relative bg-color-blue-5 m-auto max-w-[500px] min-w-[300px] w-[90%] shadow-md shadow-[rgba(0,0,0,0.5)] md:px-20 px-5 pb-20 rounded-2xl z-10 pt-[calc(100px/2)]'>
-            <div className='w-[100px] h-[100px] rounded-full absolute left-[50%] -translate-x-[50%] bg-color-blue-4 -top-[calc(100px/2)] flex justify-center items-center'>
-                {
-                    keydown ?
-                        //show animation
-                        <VisibilityOffRoundedIcon className='text-white text-[4rem]' /> :
-                        <PersonOutlineIcon className='text-white text-[4rem]' />
-                }
-
-            </div>
-
-            <div className='text-center text-[1.5rem] font-semibold pt-2 pb-10'>
-                Reset Admin Password
-            </div>
-
-            {/* Error message */}
-            {
-                msg.msg ?
-                    <div className='mb-5'>
-                        <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
-                    </div> : ''
-            }
-
-            <div className='group relative h-[35px] rounded-md mb-4'>
-                <label className='group-focus-within:bg-green-500 absolute left-0 w-[30px] bg-color-blue-4 h-full flex justify-center items-center rounded-tl-md rounded-bl-md top-0 '>
-                    <LockIcon className='text-white' />
-                </label>
-                <input
-                    className='bg-transparent border-2 border-color-blue-4 text-color-blue-4 focus:outline-none focus:border-green-500 pl-[35px] pr-[30px] w-full py-2 rounded-md focus-input focus:text-green-500'
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder='Password'
-                    value={password || ''}
-                    onInput={(e) => { setPassword(e.target.value) }}
-                    onFocus={() => setKeydown(true)}
-                    onBlur={() => setKeydown(false)}
-                />
-                <div className='group-focus-within:text-green-500 text-color-blue-4 absolute right-0 w-[30px] h-full flex justify-center items-center rounded-tr-md rounded-br-md top-0 '>
+        <Wrapper>
+            <Form onSubmit={submit}>
+                <div>
+                    <h2 className='title' style={{ textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
+                        <Title>RESET YOUR PASSWORD</Title>
+                    </h2>
                     {
-                        showPassword ?
-                            <VisibilityOffRoundedIcon onClick={() => setShowPassword(!showPassword)} /> :
-                            <RemoveRedEyeRoundedIcon onClick={() => setShowPassword(!showPassword)} />
+                        msg.msg ?
+                            <div style={{ margin: '25px 0' }}>
+                                <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
+                            </div> : ''
                     }
+                    <InputWrapper>
+                        <InputIcon right="" left="0">
+                            <LockIcon className='icon' />
+                        </InputIcon>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={password || ''}
+                            placeholder="New Password"
+                            onInput={(e) => setPassword(e.target.value)}
+                        />
+                        <InputIcon onClick={() => setShowPassword(!showPassword)} right="0" left="">
+                            {showPassword ? <VisibilityOffRoundedIcon className='icon' /> : <RemoveRedEyeRoundedIcon className='icon' />}
+                        </InputIcon>
+                    </InputWrapper>
+
+                    <InputWrapper>
+                        <InputIcon right="" left="0">
+                            <LockIcon className='icon' />
+                        </InputIcon>
+                        <input
+                            type={showCPassword ? "text" : "password"}
+                            value={cpassword || ''}
+                            placeholder="Confirm Password"
+                            onInput={(e) => setCPassword(e.target.value)}
+                        />
+                        <InputIcon onClick={() => setShowCPassword(!showCPassword)} right="0" left="">
+                            {showCPassword ? <VisibilityOffRoundedIcon className='icon' /> : <RemoveRedEyeRoundedIcon className='icon' />}
+                        </InputIcon>
+                    </InputWrapper>
+
+                    <InputWrapper>
+                        <Btn
+                            style={{ width: '100%' }}
+                            disabled={sending}
+                            color="var(--blue)"
+                        >
+                            {sending ? <Spinner size="sm" /> : "Reset Password"}
+                        </Btn>
+                    </InputWrapper>
                 </div>
-            </div>
-
-            <div className='group relative h-[35px] rounded-md mb-4'>
-                <label className='group-focus-within:bg-green-500 absolute left-0 w-[30px] bg-color-blue-4 h-full flex justify-center items-center rounded-tl-md rounded-bl-md top-0 '>
-                    <LockIcon className='text-white' />
-                </label>
-                <input
-                    className='bg-transparent border-2 border-color-blue-4 text-color-blue-4 focus:outline-none focus:border-green-500 pl-[35px] pr-[30px] w-full py-2 rounded-md focus-input focus:text-green-500'
-                    type={showCPassword ? 'text' : 'password'}
-                    placeholder='Comfirm Password'
-                    value={cpassword || ''}
-                    onInput={(e) => { setCPassword(e.target.value) }}
-                    onFocus={() => setKeydown(true)}
-                    onBlur={() => setKeydown(false)}
-                />
-                <div className='group-focus-within:text-green-500 text-color-blue-4 absolute right-0 w-[30px] h-full flex justify-center items-center rounded-tr-md rounded-br-md top-0 '>
-                    {
-                        showCPassword ?
-                            <VisibilityOffRoundedIcon onClick={() => setShowCPassword(!showCPassword)} /> :
-                            <RemoveRedEyeRoundedIcon onClick={() => setShowCPassword(!showCPassword)} />
-                    }
-                </div>
-            </div>
-
-            <div className='group relative h-[35px] rounded-md mb-2'>
-                <button className={`bg-color-blue-4 border-2 border-color-blue-4 text-color-white w-full py-2 rounded-md focus-input focus:outline-none focus:border-green-500 text-white font-bold cursor-[${sending ? 'default' : 'pointer'}] flex justify-center opacity-[${sending ? '.6' : '1'}]`} disabled={sending}>
-                    {
-                        sending ? <Spinner offColor='#fff' color="black" /> : "Reset"
-                    }
-                </button>
-            </div>
-
-        </form >
+            </Form>
+        </Wrapper>
     )
 }
 
+const Wrapper = styled.div`
+    width: 100%;
+    height: 100%;
+    margin-top: 50px;
+`
