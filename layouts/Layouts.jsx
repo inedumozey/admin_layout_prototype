@@ -61,7 +61,7 @@ function DefaultLayout({ children, contact }) {
             </div>
 
             {/* body */}
-            <div className='min-h-[calc(100vh-60px-50px)] flex justify-center items-center'>
+            <div className='min-h-[calc(100vh-60px-50px)] mt-[30px] mx-auto'>
                 {children}
             </div>
 
