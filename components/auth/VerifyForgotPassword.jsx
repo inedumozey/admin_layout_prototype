@@ -1,28 +1,39 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link'
 import { useRouter } from "next/router";
-import styled from 'styled-components';
 import LockIcon from '@mui/icons-material/Lock';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
-import Btn from '../../utils/components/Btn';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import axios from 'axios'
-import Spinner from '../../utils/components/Spinner';
-import Alart from '../../utils/components/Alart';
-import apiClass from '../../utils/data/api';
-import { Form, InputWrapper, InputIcon, Title } from '../../styles/globalStyles';
+import Spinner from '../utils/Spinner';
+import Alart from '../utils/Alart';
+import SocialLoginButton from './SocialLoginButton';
 
-const api = new apiClass()
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+const p_icon_style = 'group-focus-within:text-color-blue-3 text-color-blue-4 absolute right-0 w-[30px] h-full flex justify-center items-center rounded-tr-md rounded-br-md top-0'
 
 export default function VerifyForgotPassword() {
     const router = useRouter()
     const [showPassword, setShowPassword] = useState(false);
+    const [showPasswordRevealIcon, setShowPasswordRevealIcon] = useState(false);
     const [showCPassword, setShowCPassword] = useState(false);
     const [sending, setSending] = useState(false);
+    const [isFieldEmpty, setIsFieldEmpty] = useState(true);
     const [msg, setMsg] = useState({ msg: '', status: false });
 
     const [password, setPassword] = useState("");
-    const [cpassword, setCPassword] = useState("");
+    const [cpassword, setCpassword] = useState("");
+
+    useEffect(() => {
+        setShowPasswordRevealIcon(true)
+        setShowPassword(false)
+        setShowCPassword(false)
+    }, [password, cpassword])
+
+    // check against empty field
+    useEffect(() => {
+        password && cpassword ? setIsFieldEmpty(false) : setIsFieldEmpty(true)
+    }, [password, cpassword])
 
     const { token } = router.query;
 
@@ -34,24 +45,30 @@ export default function VerifyForgotPassword() {
         const data_ = { cpassword, password }
 
         try {
-            const { data } = await axios.put(`${BASE_URL}/auth/verify-forgot-password/?token=${token}`, { ...data_ });
+            const { data } = await axios.put(`/auth/verify-forgot-password/?token=${token}`, { ...data_ });
 
             setSending(false);
 
             // redirect
             if (!data.isVerified) {
-                router.push('/auth/email-verification-required')
+                setTimeout(() => {
+                    router.push('/auth/email-verification-required')
 
-                // save user email on local storage incase he wants to resend link
-                localStorage.setItem('email', data.email)
-            } else {
-                router.push('/dashboard')
+                    // save user email on local storage incase he wants to resend link
+                    localStorage.setItem('email', data.email)
+                    data.token ? localStorage.setItem('token', data.token) : ''
+                }, 3000)
+            }
+            else {
+                setTimeout(() => {
+                    router.push('/cpanel')
+                }, 2000)
             }
 
-            setMsg({ msg: data.msg, status: true })
+            setMsg({ msg: data.msg, status: data.status })
             // clear input
             setPassword("")
-            setCPassword("")
+            setCpassword("")
         }
         catch (err) {
             if (err.response) {
@@ -66,65 +83,72 @@ export default function VerifyForgotPassword() {
     }
 
     return (
-        <Wrapper>
-            <Form onSubmit={submit}>
-                <div>
-                    <h2 className='title' style={{ textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
-                        <Title>RESET YOUR PASSWORD</Title>
-                    </h2>
-                    {
-                        msg.msg ?
-                            <div style={{ margin: '25px 0' }}>
-                                <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
-                            </div> : ''
-                    }
-                    <InputWrapper>
-                        <InputIcon right="" left="0">
-                            <LockIcon className='icon' />
-                        </InputIcon>
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            value={password || ''}
-                            placeholder="New Password"
-                            onInput={(e) => setPassword(e.target.value)}
-                        />
-                        <InputIcon onClick={() => setShowPassword(!showPassword)} right="0" left="">
-                            {showPassword ? <VisibilityOffRoundedIcon className='icon' /> : <RemoveRedEyeRoundedIcon className='icon' />}
-                        </InputIcon>
-                    </InputWrapper>
+        <div className='auth'>
+            {/* title */}
+            <div className='text-color-blue-4 font-[600] text-center text-[1.3rem]'>RESET YOUR PASSWORD</div>
 
-                    <InputWrapper>
-                        <InputIcon right="" left="0">
-                            <LockIcon className='icon' />
-                        </InputIcon>
-                        <input
-                            type={showCPassword ? "text" : "password"}
-                            value={cpassword || ''}
-                            placeholder="Confirm Password"
-                            onInput={(e) => setCPassword(e.target.value)}
-                        />
-                        <InputIcon onClick={() => setShowCPassword(!showCPassword)} right="0" left="">
-                            {showCPassword ? <VisibilityOffRoundedIcon className='icon' /> : <RemoveRedEyeRoundedIcon className='icon' />}
-                        </InputIcon>
-                    </InputWrapper>
+            <form onSubmit={submit} className='relative m-auto max-w-[650px] min-w-[300px] w-[98%] md:px-20 py-10'>
 
-                    <InputWrapper>
-                        <Btn
-                            style={{ width: '100%' }}
-                            disabled={sending}
-                            color="var(--blue)"
-                        >
-                            {sending ? <Spinner size="sm" /> : "Reset Password"}
-                        </Btn>
-                    </InputWrapper>
+                {/* Error message */}
+                {
+                    msg.msg ?
+                        <div className='mb-5'>
+                            <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
+                        </div> : ''
+                }
+
+                <div className='form-wrapper group'>
+                    <label className='form-label '>
+                        <LockIcon className='text-white' />
+                    </label>
+                    <input
+                        className='form-input'
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder='Password'
+                        value={password || ''}
+                        onInput={(e) => { setPassword(e.target.value) }}
+                    />
+                    <div className={p_icon_style}>
+                        {
+                            showPasswordRevealIcon && password ?
+                                showPassword ?
+                                    <VisibilityOffRoundedIcon onClick={() => setShowPassword(!showPassword)} /> :
+                                    <RemoveRedEyeRoundedIcon onClick={() => setShowPassword(!showPassword)} /> : ''
+                        }
+                    </div>
                 </div>
-            </Form>
-        </Wrapper>
+
+
+                <div className='form-wrapper group'>
+                    <label className='form-label'>
+                        <LockIcon className='text-white' />
+                    </label>
+                    <input
+                        className='form-input'
+                        type={showCPassword ? 'text' : 'password'}
+                        placeholder='Confirm Password'
+                        value={cpassword || ''}
+                        onInput={(e) => { setCpassword(e.target.value) }}
+                    />
+                    <div className={p_icon_style}>
+                        {
+                            showPasswordRevealIcon && cpassword ?
+                                showCPassword ?
+                                    <VisibilityOffRoundedIcon onClick={() => setShowCPassword(!showCPassword)} /> :
+                                    <RemoveRedEyeRoundedIcon onClick={() => setShowCPassword(!showCPassword)} /> : ''
+                        }
+                    </div>
+
+                </div>
+                <div className='form-wrapper group'>
+                    <button className={`btn ${sending || isFieldEmpty ? 'opacity-pale cursor-default' : 'opacity-[1] cursor-default'}`} disabled={sending || isFieldEmpty}>
+                        {
+                            sending ? <Spinner size="sm" /> : "Reset"
+                        }
+                    </button>
+                </div>
+            </form >
+
+        </div>
     )
 }
-
-const Wrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    margin-top: 50px;
-`

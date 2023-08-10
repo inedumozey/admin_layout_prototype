@@ -15,7 +15,7 @@ export default function Alart({ children, type = "success", hide = true, onHide 
     return show ?
         <div style={{
             width: '100%',
-            padding: '12px',
+            padding: '8px',
             position: 'relative',
             background: (function () {
                 if (type === 'warning') {

@@ -1,96 +1,41 @@
 import React from 'react';
-import styled from 'styled-components';
 import Link from 'next/link'
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
-export default function SocialLoginButton() {
-    return (
-        <Wrapper>
-            <ButtonWrapper>
-                <Link className='link' href={`${BASE_URL}/auth/google`}>
-                    <img style={{ width: '25px', height: '25px' }} src="/google.png" />
-                    <span>Google</span>
-                </Link>
-                <Link className='link' href={`${BASE_URL}/auth/twitter`}>
-                    <img style={{ width: '25px', height: '25px' }} src="/twitter.png" />
-                    <span>Twitter</span>
-                </Link>
-                <Link className='link' href={`${BASE_URL}/auth/github`}>
-                    <img style={{ width: '25px', height: '25px' }} src="/github.png" />
-                    <span>Github</span>
-                </Link>
-            </ButtonWrapper>
-            <Line>
-                <div className='line'>
-                    <div className='or'>OR</div>
-                </div>
-            </Line>
+export default function SocialLoginButton({ type = 'signin' }) {
+    const url = type == 'signup' ? `${BASE_URL}/auth/signup` : `${BASE_URL}/auth/signin`;
 
-        </Wrapper>
+    const socials = [
+        {
+            title: 'Google',
+            url: url + '/google',
+            img: "/google.png"
+        },
+        {
+            title: 'Twitter',
+            url: url + '/twitter',
+            img: "/twitter.png"
+        }
+    ]
+    return (
+        <div>
+            <div className='flex justify-center items-center gap-10'>
+                {
+                    socials?.map((social, i) => {
+                        return (
+                            <Link key={i} href={social.url} className='border-1 border-[#cbcbcb] flex select-none items-center justify-center shadow-md p-[5px] rounded-[5px] text-[1.2rem] transition duration-[.3s] cursor-pointer no-underline font-[530] flex-1 hover:bg-color-dark-0'>
+                                <img className='h-[25px] w-[25px]' src={social.img} />
+                                <span className='ml-[3px]'>{social.title}</span>
+                            </Link>
+                        )
+                    })
+                }
+            </div>
+            <div className='py-[20px] relative mt-5'>
+                <div className='absolute w-full h-[2px] bg-white left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%]'>
+                    <div className='absolute w-[30px] h-[30px] bg-white left-[50%] top-[50%] -translate-x-[50%] -translate-y-[50%] text-black rounded-full text-center flex justify-center items-center'>OR</div>
+                </div>
+            </div>
+        </div>
     )
 }
-
-const Wrapper = styled.div`
-`
-const ButtonWrapper = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: centere;
-    padding: 10px 0;
-    gap: 10px;
-
-    .link {
-        border: 1px solid #cbcbcb;
-        display: flex;
-        user-select: none;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 1px 0px 5px 0px #ddd, -1px -0px 5px 0px #ddd;
-        padding: 10px;
-        border-radius: 5px;
-        font-size: 1.2rem;
-        transition: .3s;
-        cursor: pointer;
-        text-decoration: none;
-        font-weight: 530;
-        flex-grow: 1;
-
-        &:hover{
-            background: #e5e2e2;
-        }
-
-        span {
-            margin-left: 3px;
-        }
-    }
-`
-const Line = styled.div`
-    padding: 20px 0;
-    position: relative;
-
-    .line {
-        position: absolute;
-        width: 100%;
-        height: 2px;
-        background: #fff;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    .or {
-        position: absolute;
-        width: 30px;
-        height: 30px;
-        background: #fff;
-        left: 50%;
-        color: #000;
-        border-radius: 50%;
-        text-align: center;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-`

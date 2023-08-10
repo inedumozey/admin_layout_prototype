@@ -14,6 +14,7 @@
     --color-blue-3: rgb(20, 132, 143);
     --color-blue-4: rgb(28, 68, 94);
 
+    --color-dark-0: #e5e2e2;
     --color-dark-1: #eff0f2;
     --color-dark-2: #dadce0;
     --color-dark-3: rgb(149, 156, 172);
@@ -31,6 +32,12 @@
     
 }
 
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
 body{
     font-size: .8rem
 }
@@ -42,15 +49,6 @@ body{
 .wrapper {
     @apply px-5
 }
-
-/* .focus-input:focus {
-    outline: none;
-    border: 3px solid green
-}
-
-.focus-input:focus+label {
-    background-color: green
-} */
 
 /* wrapper on tablet screen */
 @media screen and (min-width: 640px) {
@@ -80,4 +78,42 @@ body{
 @keyframes ping {
   75%{transform: scale(1.5); opacity: 0}
   100% {transform: scale(1.5); opacity: 0}
+}
+
+.auth {
+    @apply w-full max-w-[600px] mx-auto py-[15px] px-[10px]
+}
+.form-wrapper {
+    @apply relative h-[35px] rounded-md mb-3
+}
+
+.form-label {
+    @apply group-focus-within:bg-color-blue-3 absolute left-0 w-[30px] bg-color-blue-4 h-full flex justify-center items-center rounded-tl-md rounded-bl-md top-0
+}
+
+.form-input {
+    @apply bg-transparent border-2 border-color-blue-4 text-color-blue-4 focus:outline-none focus:border-color-blue-3 pl-[35px] pr-[10px] w-full h-full rounded-md focus:text-color-blue-3 border-t-transparent border-r-transparent rounded-br-none focus:border-t-transparent focus:border-r-transparent focus:bg-color-dark-0
+}
+
+.btn {
+    @apply bg-color-blue-4 border-2 border-color-blue-4 text-white w-full h-full rounded-md focus:outline-none focus:border-color-blue-3 font-[600] flex justify-center items-center hover:opacity-pale
+}
+
+.shadow-b-sm{
+    box-shadow: 4px 4px 6px -1px rgb(0 0 0 / 0.1)
+}
+.shadow-t-sm{
+    box-shadow: -4px -4px 6px -1px rgb(0 0 0 / 0.1);
+}
+.shadow-b-md{
+    box-shadow: 0px 2px 20px 1px rgba(0, 0, 0, 0.2);
+}
+.shadow-t-md{
+    box-shadow: -0px -2px 20px 1px rgba(0, 0, 0, 0.2);
+}
+.shadow-all-sm{
+    box-shadow: 4px 4px 6px -1px rgb(0 0 0 / 0.1), -4px -4px 6px -1px rgb(0 0 0 / 0.1);
+}
+.shadow-all-md{
+    box-shadow: 0px 2px 20px 1px rgba(0, 0, 0, 0.2), -0px -2px 20px 1px rgba(0, 0, 0, 0.2);
 }

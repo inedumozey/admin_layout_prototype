@@ -1,11 +1,10 @@
 import Cookies from 'js-cookie';
 import axios from 'axios'
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
 const authUtils = {
     refreshtoken: async () => {
         try {
-            const { data } = await axios.get(`${BASE_URL}/auth/generate-accesstoken`, {
+            const { data } = await axios.get(`/auth/generate-accesstoken`, {
                 headers: {
                     'Authorization': `Bearer ${Cookies.get('refreshtoken')}`
                 }
@@ -22,7 +21,7 @@ const authUtils = {
 
     fetchProfile: async () => {
         try {
-            const { data } = await axios.get(`${BASE_URL}/profile`, {
+            const { data } = await axios.get(`/profile`, {
                 headers: {
                     'Authorization': `Bearer ${Cookies.get('refreshtoken')}`
                 }

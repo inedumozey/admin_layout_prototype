@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
-import Link from "next/link";
-import styled from 'styled-components';
-import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import Btn from '../../utils/components/Btn';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link'
 import axios from 'axios'
-import Spinner from '../../utils/components/Spinner';
-import Alart from '../../utils/components/Alart';
-import { Form, InputWrapper, InputIcon, Title } from '../../styles/globalStyles';
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+import Spinner from '../utils/Spinner';
+import Alart from '../utils/Alart';
 
 export default function ForgotPassword() {
     const [sending, setSending] = useState(false);
-    const [token, setToken] = useState('');
+    const [token, setToken] = useState("");
+    const [isFieldEmpty, setIsFieldEmpty] = useState(true);
     const [msg, setMsg] = useState({ msg: '', status: false });
-
     const [email, setEmail] = useState("");
+
+
+    // check against empty field
+    useEffect(() => {
+        email ? setIsFieldEmpty(false) : setIsFieldEmpty(true)
+    }, [email])
 
     // submit form
     const submit = async (e) => {
@@ -25,7 +25,7 @@ export default function ForgotPassword() {
         const data_ = { email }
 
         try {
-            const { data } = await axios.post(`${BASE_URL}/auth/forgot-password`, { ...data_ });
+            const { data } = await axios.post(`/auth/forgot-password`, { ...data_ });
 
             setSending(false);
 
@@ -48,56 +48,56 @@ export default function ForgotPassword() {
             setSending(false);
         }
     }
+
     return (
-        <Wrapper>
-            <Form onSubmit={submit}>
-                <div>
-                    <h2 className='title' style={{ textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
-                        <Title>FORGOT PASSWORD</Title>
-                    </h2>
-                    {
-                        msg.msg ?
-                            <div style={{ margin: '25px 0' }}>
-                                <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
-                            </div> : ''
-                    }
-                    <InputWrapper>
-                        <InputIcon right="" left="0">
-                            <EmailRoundedIcon className='icon' />
-                        </InputIcon>
-                        <input
-                            autoFocus
-                            type="text"
-                            value={email || ''}
-                            placeholder="Enter Email / Username"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </InputWrapper>
+        <div className='auth'>
+            {/* title */}
+            <div className='text-color-blue-4 font-[600] text-center text-[1.3rem]'>FORGOT PASSWORD</div>
 
-                    <div style={{ padding: '0 0 5px 2px' }}>
-                        <Link href='/auth/' >Login</Link>
-                    </div>
+            <form onSubmit={submit} className='relative m-auto max-w-[650px] min-w-[300px] w-[98%] md:px-20 py-10'>
 
-                    <InputWrapper>
-                        <Btn
-                            style={{ width: '100%' }}
-                            disabled={sending}
-                            color="var(--blue)">
-                            {sending ? <Spinner size="sm" /> : "Continue"}
-                        </Btn>
-                    </InputWrapper>
+                {/* Error message */}
+                {
+                    msg.msg ?
+                        <div className='mb-5'>
+                            <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
+                        </div> : ''
+                }
 
-                    {
-                        token ? <Link href={`/auth/verify-forgot-password/?token=${token}`}>Click to Reset Password</Link> : ''
-                    }
+                <div className='form-wrapper group'>
+                    <label className='form-label'>
+                        <PersonOutlineIcon className='text-white' />
+                    </label>
+                    <input
+                        className='form-input'
+                        type="text"
+                        placeholder='Email/Username'
+                        value={email || ''}
+                        onInput={(e) => { setEmail(e.target.value) }}
+                    />
                 </div>
-            </Form>
-        </Wrapper>
+
+                {/* if on development mode, token will be sent to the browser */}
+                {
+                    token ? <Link className='text-green-500' href={`/auth/verify-forgot-password/?token=${token}`} target='_blank'>Click to Reset Password</Link> : ''
+                }
+
+                <div className='form-wrapper group'>
+                    <button className={`btn ${sending || isFieldEmpty ? 'opacity-pale cursor-default' : 'opacity-[1] cursor-default'}`} disabled={sending || isFieldEmpty}>
+                        {
+                            sending ? <Spinner size="sm" /> : "Continue"
+                        }
+                    </button>
+                </div>
+
+
+                <div className='flex justify-between'>
+                    <Link href="/auth/signin" className='text-blue-500 underline'>
+                        Sign In
+                    </Link>
+                </div>
+            </form >
+
+        </div>
     )
 }
-
-
-const Wrapper = styled.div`
-    width: 100%;
-    height: 100%;
-`

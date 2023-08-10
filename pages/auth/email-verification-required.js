@@ -1,7 +1,6 @@
 import React from 'react';
-// import EmailVerificationRequired from '../../components/auth/emailVerificationRequired';
+import EmailVerificationRequired from '../../components/auth/EmailVerificationRequired';
 
 export default function emailVerificationRequired() {
-    return <div>Email verify</div>
-    // return <EmailVerificationRequired />
+    return <EmailVerificationRequired />
 }

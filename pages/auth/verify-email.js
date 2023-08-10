@@ -1,7 +1,6 @@
 import React from 'react'
-// import VerifyEmail from '../../components/auth/verifyEmail'
+import VerifyEmail from '../../components/auth/VerifyEmail'
 
 export default function verifyEmail() {
-    return <div>Email verify</div>
-    // return <VerifyEmail />
+    return <VerifyEmail />
 }

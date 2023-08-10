@@ -61,10 +61,8 @@ function DefaultLayout({ children, contact }) {
             </div>
 
             {/* body */}
-            <div className='h-[calc(100vh-60px-50px)] flex items-center justify-center'>
-                <div className='w-full m-auto'>
-                    {children}
-                </div>
+            <div className='min-h-[calc(100vh-60px-50px)] flex justify-center items-center'>
+                {children}
             </div>
 
             {/* footer */}

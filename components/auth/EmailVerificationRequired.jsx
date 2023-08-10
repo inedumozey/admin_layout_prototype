@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Link from "next/link";
-import styled from 'styled-components';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import axios from 'axios'
 import { useRouter } from 'next/router'
-import Spinner from '../../utils/components/Spinner';
-import Alart from '../../utils/components/Alart';
-import { Title } from '../../styles/globalStyles';
-const APP_NAME = 'Drophtye'
+import Spinner from '../utils/Spinner';
+import Alart from '../utils/Alart';
+const APP_NAME = 'Mobill'
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 
@@ -22,7 +20,8 @@ export default function EmailVerificationRequired() {
         if (!localStorage.getItem("email")) {
             router.push('/auth/signin')
         }
-    }, [])
+
+    }, [localStore])
 
     // submit form
     const submit = async () => {
@@ -66,137 +65,72 @@ export default function EmailVerificationRequired() {
     }, [])
 
     return (
-        <Wrapper>
-            <div>
-                <h2 className='title' style={{ textAlign: 'center', marginBottom: '10px', fontWeight: '600' }}>
-                    <Title>EMAIL VERIFICATION</Title>
-                </h2>
-                <div style={{ textAlign: 'center' }}>Thank you for signing up for a {APP_NAME} account.</div>
+        <div className='auth py-[15px] px-[10px]'>
+            <div className='w-full mx-auto py-[50px] px-[10px] bg-color-dark-0 rounded-md text-center shadow-all-sm'>
+                {/* title */}
+                <div className='text-color-blue-4 font-[600] text-[1.3rem]'>EMAIL VERIFICATION</div>
 
-                <Content>
-                    {
-                        msg.msg ?
-                            <div style={{ margin: '25px 0' }}>
-                                <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
-                            </div> : ''
-                    }
+                <div className='text-center'>Thank you for signing up for a {APP_NAME} account</div>
 
-                    <div className="email-icon-wrapper">
-                        <EmailRoundedIcon className='email-icon' />
-                        <div className='item-wrapper'>
-                            <div className="item">1</div>
-                        </div>
+                {/* Error message */}
+                {
+                    msg.msg ?
+                        <div className='mb-5'>
+                            <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
+                        </div> : ''
+                }
+
+                <div className="text-center w-[150px] h-[130px] relative my-[10px] mx-auto flex justify-center items-center">
+                    <EmailRoundedIcon className='text-[10rem]' />
+                    <div className='absolute top-0 right-0 w-[40px] h-[40px] p-[4px] rounded-full bg-white'>
+                        <div className="w-full h-full rounded-full border-[4px] border-green-500 flex justify-center items-center text-[1.3rem] font-bold text-green-500 bg-white">1</div>
                     </div>
+                </div>
 
-                    <h1>Verify your email address</h1>
+                <h1>Verify your email address</h1>
 
-                    <br />
-                    <br />
+                <br />
 
-                    {
-                        localStore.email ?
-                            <>
-                                <div>Verification link has been sent to:</div>
-                                <div>{localStore.email}</div>
-                            </> : ''
-                    }
-                    <br />
-                    <br />
-                    <br />
+                {
+                    localStore.email ?
+                        <>
+                            <div>Verification link has been sent to <span className='text-color-dark-3'>{localStore.email}</span></div>
+                        </> : ''
+                }
+                <br />
 
-                    <div style={{ color: '#b3a9a9' }}>Click on the link in the email to activate your account</div>
+                <div className='text-color-dark-3'>Click on the link in the email to activate your account</div>
 
-                    <br />
+                <br />
 
-                    {
-                        localStore.token ?
-                            <span>
-                                On dev mode:
-                                <Link style={{ paddingBottom: '10px', display: 'block' }} target='_blank' href={`/auth/verify-email?token=${localStore.token}`}>Verify your account</Link>
-                            </span>
-                            : ""
-                    }
-
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-
-                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                        <span style={{ marginRight: '5px' }}>{"Didn't receive the email?"}</span>
+                {/* on development, token will be sent to the browser */}
+                {
+                    localStore.token ?
                         <span>
-                            {sending ? <Spinner size="sm" /> :
-                                <span
-                                    style={{ color: 'red', textDecoration: 'underline', fontStyle: 'italic', cursor: 'pointer' }}
-                                    onClick={submit}
-                                >
-                                    Reset Email
-                                </span>
-                            }
+                            <div className='text-color-dark-3'>On dev mode</div>
+                            <Link className='pb-[10px] block text-green-500' target='_blank' href={`/auth/verify-email?token=${localStore.token}`}>Verify your account</Link>
                         </span>
+                        : ""
+                }
 
-                    </div>
+                <br />
 
-                </Content>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <span style={{ marginRight: '5px' }}>{"Didn't receive the email?"}</span>
+                    <span>
+                        {sending ? <Spinner size="sm" /> :
+                            <span
+                                style={{ color: 'red', textDecoration: 'underline', fontStyle: 'italic', cursor: 'pointer' }}
+                                onClick={submit}
+                            >
+                                Reset Email
+                            </span>
+                        }
+                    </span>
+
+                </div>
 
             </div>
-        </Wrapper>
+        </div>
     )
 }
-
-const Wrapper = styled.div`
-    width: 100%;
-    height: 100%;
-    padding: 15px 10px;
-`
-
-const Content = styled.div`
-    padding: 10px 10px 20px 10px;
-    width: 100%;
-    min-height: 30vh;
-    background: #fff;
-    max-width: 600px;
-    border-radius: 15px;
-    margin: 10px auto;
-    text-align: center;
-
-    .email-icon-wrapper{
-        text-align: center;
-        width: 150px;
-        height: 130px;
-        position: relative;
-        margin: 10px auto;
-
-        .email-icon{
-            font-size: 10rem;
-        }
-
-        .item-wrapper{
-            position: absolute;
-            bottom: 10px;
-            right: 0;
-            width: 40px;
-            height: 40px;
-            padding: 4px;
-            border-radius: 50%;
-            background: #fff;
-
-            .item{
-                width: 100%;
-                height: 100%;
-                border-radius: 50%;
-                border: 4px solid green;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 1.3rem;
-                font-weight: bold;
-                color: green;
-                background: #fff;
-
-            }
-        }
-    }
-`

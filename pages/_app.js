@@ -6,11 +6,23 @@ import { WhatsAppBtn } from '@mozeyinedu/react-lab'
 import ScrollToTop from "react-scroll-to-top";
 import NextProgress from 'nextjs-progressbar';
 import Head from 'next/head'
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 axios.defaults.withCredentials = true
 
 
 function MyApp({ Component, pageProps }) {
+  const router = useRouter()
+
+  // remove email and verification token from local storage if route is not auth/email-verification-required
+  useEffect(() => {
+    if (router.asPath != 'auth/email-verification-required') {
+      localStorage.removeItem('email')
+      localStorage.removeItem('token')
+    }
+  }, [])
   return (
     <>
       <Head>

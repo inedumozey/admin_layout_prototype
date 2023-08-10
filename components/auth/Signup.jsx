@@ -1,43 +1,48 @@
-import React, { useState, useEffect } from 'react';
-import Link from "next/link";
-import styled from 'styled-components';
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link'
+import { useRouter } from "next/router";
 import LockIcon from '@mui/icons-material/Lock';
 import RemoveRedEyeRoundedIcon from '@mui/icons-material/RemoveRedEyeRounded';
 import VisibilityOffRoundedIcon from '@mui/icons-material/VisibilityOffRounded';
-import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
-import Btn from '../../utils/components/Btn';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import axios from 'axios'
-import { useRouter } from "next/router";
-import Spinner from '../../utils/components/Spinner';
-import Alart from '../../utils/components/Alart';
-import { Form, InputWrapper, InputIcon, Title } from '../../styles/globalStyles';
+import Spinner from '../utils/Spinner';
+import Alart from '../utils/Alart';
 import SocialLoginButton from './SocialLoginButton';
 
-const APP_NAME = "Drophyte"
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+const p_icon_style = 'group-focus-within:text-color-blue-3 text-color-blue-4 absolute right-0 w-[30px] h-full flex justify-center items-center rounded-tr-md rounded-br-md top-0'
 
 export default function Signup() {
     const router = useRouter()
     const [showPassword, setShowPassword] = useState(false);
-    const [showCpassword, setShowCpassword] = useState(false);
+    const [showPasswordRevealIcon, setShowPasswordRevealIcon] = useState(false);
+    const [showCPassword, setShowCPassword] = useState(false);
     const [sending, setSending] = useState(false);
+    const [isFieldEmpty, setIsFieldEmpty] = useState(true);
     const [msg, setMsg] = useState({ msg: '', status: false });
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [cpassword, setCpassword] = useState("");
-    const [getProductUpdate, setGetProductUpdate] = useState(true);
+
+    useEffect(() => {
+        setShowPasswordRevealIcon(true)
+        setShowPassword(false)
+        setShowCPassword(false)
+    }, [password, cpassword])
+
+    // check against empty field
+    useEffect(() => {
+        password && cpassword && email ? setIsFieldEmpty(false) : setIsFieldEmpty(true)
+    }, [password, cpassword, email])
 
     // submit form
     const submit = async (e) => {
         e.preventDefault();
-
         setSending(true)
 
         try {
-            const { data } = await axios.post(`${BASE_URL}/auth/signup`, {
-                getProductUpdate,
+            const { data } = await axios.post(`/auth/signup`, {
                 email,
                 password,
                 cpassword
@@ -47,14 +52,16 @@ export default function Signup() {
 
             // redirect
             if (!data.isVerified) {
-                router.push('/auth/email-verification-required')
+                setTimeout(() => {
+                    router.push('/auth/email-verification-required')
+                }, 3000)
 
                 // save user email on local storage incase he wants to resend link
                 localStorage.setItem('email', data.email)
                 data.token ? localStorage.setItem('token', data.token) : ''
             }
 
-            setMsg({ msg: data.msg, status: true });
+            setMsg({ msg: data.msg, status: data.status });
             // clear input
             setEmail("");
             setPassword("");
@@ -62,108 +69,108 @@ export default function Signup() {
         }
         catch (err) {
             if (err.response) {
-                setMsg({ msg: err.response.data.msg, status: false })
+                setMsg({ msg: err.response.data.msg, status: err.response.data.status })
             }
             else {
-                setMsg({ msg: err.message, status: false })
+                setMsg({ msg: err.message, status: err.response.data.status })
             }
             setSending(false);
         }
     }
 
     return (
+        <div className='auth'>
+            {/* title */}
+            <div className='text-color-blue-4 font-[600] text-center text-[1.3rem]'>Sign Up</div>
 
-        <Wrapper>
-            <Form onSubmit={submit}>
-                <div>
-                    <h2 style={{ textAlign: 'center', marginBottom: '10px', fontWeight: '600', color: 'var(--blue)' }}>
-                        <Title>Sign up for {APP_NAME}</Title>
-                    </h2>
+            <form onSubmit={submit} className='relative m-auto max-w-[650px] min-w-[300px] w-[98%] md:px-20 py-10'>
 
-                    <SocialLoginButton />
+                {/* login with google and other social medial buttons */}
+                <SocialLoginButton />
 
-                    {
-                        msg.msg ?
-                            <div style={{ margin: '25px 0' }}>
-                                <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
-                            </div> : ''
-                    }
+                {/* Error message */}
+                {
+                    msg.msg ?
+                        <div className='mb-5'>
+                            <Alart onHide={setMsg} type={msg.status ? 'success' : 'error'}>{msg.msg}</Alart>
+                        </div> : ''
+                }
 
-                    <InputWrapper>
+                <div className='form-wrapper group'>
+                    <label className='form-label'>
+                        <PersonOutlineIcon className='text-white' />
+                    </label>
+                    <input
+                        className='form-input'
+                        type="text"
+                        placeholder='Email'
+                        value={email || ''}
+                        onInput={(e) => { setEmail(e.target.value) }}
+                    />
+                </div>
 
-                        <InputIcon right="" left="0">
-                            <EmailRoundedIcon className='icon' />
-                        </InputIcon>
-                        <input
-                            autoFocus
-                            type="text"
-                            value={email || ''}
-                            placeholder="Email Address"
-                            onChange={(e) => setEmail(e.target.value)}
-                        />
-                    </InputWrapper>
-
-                    <InputWrapper>
-                        <InputIcon right="" left="0">
-                            <LockIcon className='icon' />
-                        </InputIcon>
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            value={password || ''}
-                            placeholder="Password"
-                            onInput={(e) => setPassword(e.target.value)}
-                        />
-                        <InputIcon onClick={() => setShowPassword(!showPassword)} right="0" left="">
-                            {showPassword ? <VisibilityOffRoundedIcon className='icon' /> : <RemoveRedEyeRoundedIcon className='icon' />}
-                        </InputIcon>
-                    </InputWrapper>
-
-                    <InputWrapper>
-                        <InputIcon right="" left="0">
-                            <LockIcon className='icon' />
-                        </InputIcon>
-                        <input
-                            type={showCpassword ? "text" : "password"}
-                            value={cpassword || ''}
-                            placeholder="Confirm Password"
-                            onInput={(e) => setCpassword(e.target.value)}
-                        />
-                        <InputIcon onClick={() => setShowCpassword(!showCpassword)} right="0" left="">
-                            {showCpassword ? <VisibilityOffRoundedIcon className='icon' /> : <RemoveRedEyeRoundedIcon className='icon' />}
-                        </InputIcon>
-                    </InputWrapper>
-
-                    <div style={{ padding: '5px 0 15px 0', display: 'flex', alignItems: 'center' }}>
-                        <input defaultChecked={getProductUpdate} type="checkbox" name="" id="email" onInput={(e) => setGetProductUpdate(e.target.checked)} />
-                        <label htmlFor="email" style={{ marginLeft: '6px' }} > Email me about {APP_NAME} products' updates</label>
+                <div className='form-wrapper group'>
+                    <label className='form-label '>
+                        <LockIcon className='text-white' />
+                    </label>
+                    <input
+                        className='form-input'
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder='Password'
+                        value={password || ''}
+                        onInput={(e) => { setPassword(e.target.value) }}
+                    />
+                    <div className={p_icon_style}>
+                        {
+                            showPasswordRevealIcon && password ?
+                                showPassword ?
+                                    <VisibilityOffRoundedIcon onClick={() => setShowPassword(!showPassword)} /> :
+                                    <RemoveRedEyeRoundedIcon onClick={() => setShowPassword(!showPassword)} /> : ''
+                        }
                     </div>
+                </div>
 
-                    <InputWrapper>
-                        <Btn
-                            style={{ width: '100%' }}
-                            disabled={sending}
-                            color="var(--blue)">
-                            {sending ? <Spinner size="sm" /> : "Sign Up"}
-                        </Btn>
-                    </InputWrapper>
 
-                    <div style={{ padding: '0 0 10px 0' }}>
-                        <div>By signing up you agree to our <Link href='/tc' target='_blank'>terms of service.</Link></div>
-                    </div>
-
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span>
-                            Have an account? <Link href='/auth' >Sign In</Link>
-                        </span>
+                <div className='form-wrapper group'>
+                    <label className='form-label'>
+                        <LockIcon className='text-white' />
+                    </label>
+                    <input
+                        className='form-input'
+                        type={showCPassword ? 'text' : 'password'}
+                        placeholder='Confirm Password'
+                        value={cpassword || ''}
+                        onInput={(e) => { setCpassword(e.target.value) }}
+                    />
+                    <div className={p_icon_style}>
+                        {
+                            showPasswordRevealIcon && cpassword ?
+                                showCPassword ?
+                                    <VisibilityOffRoundedIcon onClick={() => setShowCPassword(!showCPassword)} /> :
+                                    <RemoveRedEyeRoundedIcon onClick={() => setShowCPassword(!showCPassword)} /> : ''
+                        }
                     </div>
 
                 </div>
-            </Form>
-        </Wrapper>
+                <div>
+                    By signing up, you accepted our <Link className='text-blue-500 italic' href="/tc">terms and conditions</Link>
+                </div>
+                <div className='form-wrapper group'>
+                    <button className={`btn ${sending || isFieldEmpty ? 'opacity-pale cursor-default' : 'opacity-[1] cursor-default'}`} disabled={sending || isFieldEmpty}>
+                        {
+                            sending ? <Spinner size="sm" /> : "Sign Up"
+                        }
+                    </button>
+                </div>
+
+
+                <div className='flex justify-between'>
+                    <Link href="/auth/signin" className='text-blue-500 underline'>
+                        Sign in
+                    </Link>
+                </div>
+            </form >
+
+        </div>
     )
 }
-
-const Wrapper = styled.div`
-    width: 100%;
-    height: 100%;
-`

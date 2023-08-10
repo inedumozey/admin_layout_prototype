@@ -38,6 +38,7 @@ module.exports = {
         'color-blue-3': 'var(--color-blue-3)',
         'color-blue-4': 'var(--color-blue-4)',
 
+        'color-dark-0': 'var(--color-dark-0)',
         'color-dark-1': 'var(--color-dark-1)',
         'color-dark-2': 'var(--color-dark-2)',
         'color-dark-3': 'var(--color-dark-3)',
