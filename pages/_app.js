@@ -33,7 +33,7 @@ function MyApp({ Component, pageProps }) {
         <title>VTU</title>
       </Head>
       <ScrollToTop smooth color="var(--major-color-purest)" style={{ background: 'rgba(0,0,0,.2)' }} />
-      <WhatsAppBtn mobile="08033333333" size="50px" />
+      <WhatsAppBtn mobile="08036000347" size="35px" />
 
       <NextProgress options={{ showSpinner: false }} />
       <div className="max-w-[var(--xxlg)] m-auto bg-white">
