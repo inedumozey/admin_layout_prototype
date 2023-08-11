@@ -25,6 +25,8 @@ export default function Signup() {
     const [password, setPassword] = useState("");
     const [cpassword, setCpassword] = useState("");
 
+    const { refcode } = router.query
+
     useEffect(() => {
         setShowPasswordRevealIcon(true)
         setShowPassword(false)
@@ -42,7 +44,7 @@ export default function Signup() {
         setSending(true)
 
         try {
-            const { data } = await axios.post(`/auth/signup`, {
+            const { data } = await axios.post(`/auth/signup?refcode=${refcode}`, {
                 email,
                 password,
                 cpassword
@@ -72,7 +74,7 @@ export default function Signup() {
                 setMsg({ msg: err.response.data.msg, status: err.response.data.status })
             }
             else {
-                setMsg({ msg: err.message, status: err.response.data.status })
+                setMsg({ msg: err.message, status: false })
             }
             setSending(false);
         }

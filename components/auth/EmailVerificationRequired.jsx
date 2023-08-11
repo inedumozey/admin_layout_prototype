@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Link from "next/link";
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import axios from 'axios'
 import { useRouter } from 'next/router'
 import Spinner from '../utils/Spinner';
 import Alart from '../utils/Alart';
-const APP_NAME = 'Mobill'
-
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+import { ContextData } from '../../context/Context';
 
 export default function EmailVerificationRequired() {
     const router = useRouter()
+    const { contact } = useContext(ContextData)
+
     const [sending, setSending] = useState(false);
     const [msg, setMsg] = useState({ msg: '', status: false });
     const [localStore, setLocalStore] = useState({ email: '', token: '' })
@@ -28,7 +28,7 @@ export default function EmailVerificationRequired() {
         setSending(true)
 
         try {
-            const { data } = await axios.post(`${BASE_URL}/auth/resend-verification-link`, { email: localStore.email });
+            const { data } = await axios.post(`auth/resend-verification-link`, { email: localStore.email });
 
             setSending(false);
 
@@ -47,7 +47,7 @@ export default function EmailVerificationRequired() {
         }
         catch (err) {
             if (err.response) {
-                setMsg({ msg: err.response.data.msg, status: false })
+                setMsg({ msg: err.response.data.msg, status: err.response.data.status })
             }
             else {
                 setMsg({ msg: err.message, status: false })
@@ -70,7 +70,7 @@ export default function EmailVerificationRequired() {
                 {/* title */}
                 <div className='text-color-blue-4 font-[600] text-[1.3rem]'>EMAIL VERIFICATION</div>
 
-                <div className='text-center'>Thank you for signing up for a {APP_NAME} account</div>
+                <div className='text-center'>Thank you for signing up for a {contact.name} account</div>
 
                 {/* Error message */}
                 {

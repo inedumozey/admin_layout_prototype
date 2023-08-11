@@ -72,7 +72,7 @@ export default function VerifyForgotPassword() {
         }
         catch (err) {
             if (err.response) {
-                setMsg({ msg: err.response.data.msg, status: false })
+                setMsg({ msg: err.response.data.msg, status: err.response.data.status })
             }
             else {
                 setMsg({ msg: err.message, status: false })

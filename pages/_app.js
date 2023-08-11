@@ -12,7 +12,6 @@ import { useRouter } from "next/router";
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 axios.defaults.withCredentials = true
 
-
 function MyApp({ Component, pageProps }) {
   const router = useRouter()
 
@@ -23,6 +22,7 @@ function MyApp({ Component, pageProps }) {
       localStorage.removeItem('token')
     }
   }, [])
+
   return (
     <>
       <Head>
@@ -30,10 +30,11 @@ function MyApp({ Component, pageProps }) {
           name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
         />
-        <title>VTU</title>
+        <title>ABC</title>
       </Head>
       <ScrollToTop smooth color="var(--major-color-purest)" style={{ background: 'rgba(0,0,0,.2)' }} />
-      <WhatsAppBtn mobile="08036000347" size="35px" />
+
+      <WhatsAppBtn mobile="08036000347" size="50px" />
 
       <NextProgress options={{ showSpinner: false }} />
       <div className="max-w-[var(--xxlg)] m-auto bg-white">

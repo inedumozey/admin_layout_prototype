@@ -72,7 +72,7 @@ export default function Signup() {
                 setMsg({ msg: err.response.data.msg, status: err.response.data.status })
             }
             else {
-                setMsg({ msg: err.message, status: err.response.data.status })
+                setMsg({ msg: err.message, status: err.message })
             }
             setSending(false);
         }
