@@ -9,7 +9,7 @@ export default function Copyright() {
     return (
         <div className='text-center text-[.8rem] leading-[50px]' >
             <div>
-                &copy; {currentYear > startedYear ? currentYear : startedYear} {contact.name} All Right Reserved
+                &copy; {currentYear > startedYear ? `${startedYear.toString()}-${currentYear.toString()}` : startedYear} {contact.name} All Right Reserved
             </div>
         </div>
     )

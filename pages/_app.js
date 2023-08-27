@@ -8,23 +8,30 @@ import NextProgress from 'nextjs-progressbar';
 import Head from 'next/head'
 import { useEffect } from "react";
 import { useRouter } from "next/router";
-
+import { SessionProvider } from "next-auth/react"
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
 axios.defaults.withCredentials = true
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps: { session, ...pageProps } }) {
   const router = useRouter()
 
-  // remove email and verification token from local storage if route is not auth/email-verification-required
   useEffect(() => {
+    // remove email and verification token from local storage if route is not auth/email-verification-required
     if (router.asPath != 'auth/email-verification-required') {
       localStorage.removeItem('email')
       localStorage.removeItem('token')
     }
+
+    // remove provider and type from local storage if route is not auth/oauth
+    if (!router.asPath.includes('auth/oauth')) {
+      localStorage.removeItem('type')
+      localStorage.removeItem('provider')
+    }
+
   }, [])
 
   return (
-    <>
+    <SessionProvider session={session}>
       <Head>
         <meta
           name="viewport"
@@ -44,7 +51,7 @@ function MyApp({ Component, pageProps }) {
           </Layouts>
         </Context>
       </div>
-    </>
+    </SessionProvider>
   )
 }
 

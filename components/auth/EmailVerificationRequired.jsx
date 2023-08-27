@@ -6,6 +6,7 @@ import { useRouter } from 'next/router'
 import Spinner from '../utils/Spinner';
 import Alart from '../utils/Alart';
 import { ContextData } from '../../context/Context';
+import Card from '../utils/Card';
 
 export default function EmailVerificationRequired() {
     const router = useRouter()
@@ -66,7 +67,7 @@ export default function EmailVerificationRequired() {
 
     return (
         <div className='auth py-[15px] px-[10px]'>
-            <div className='w-full mx-auto py-[50px] px-[10px] bg-color-dark-0 rounded-md text-center shadow-all-sm'>
+            <Card>
                 {/* title */}
                 <div className='text-color-blue-4 font-[600] text-[1.3rem]'>EMAIL VERIFICATION</div>
 
@@ -129,8 +130,7 @@ export default function EmailVerificationRequired() {
                     </span>
 
                 </div>
-
-            </div>
+            </Card>
         </div>
     )
 }

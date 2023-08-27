@@ -88,7 +88,7 @@ export default function Signup() {
             <form onSubmit={submit} className='relative m-auto max-w-[650px] min-w-[300px] w-[98%] md:px-20 py-10'>
 
                 {/* login with google and other social medial buttons */}
-                <SocialLoginButton />
+                <SocialLoginButton type='signup' />
 
                 {/* Error message */}
                 {

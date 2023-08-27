@@ -2,8 +2,11 @@ import React, { useState, useEffect, useContext } from 'react'
 import Link from 'next/link'
 import { useRouter } from "next/router";
 import axios from 'axios'
+import Loading from '../utils/Loading';
+import Quotes from '../utils/Quotes';
+import Card from '../utils/Card';
+import authUtils from './utils';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL
 
 export default function VerifyEmail() {
     const router = useRouter()
@@ -28,7 +31,7 @@ export default function VerifyEmail() {
 
     const sendToken = async () => {
         try {
-            const { data } = await axios.get(`${BASE_URL}/auth/verify-email/?token=${token}`);
+            const { data } = await axios.get(`auth/verify-email/?token=${token}`);
 
             setFetched({
                 status: true,
@@ -56,12 +59,14 @@ export default function VerifyEmail() {
 
     useEffect(() => {
         if (!loading) {
+            // save tokens on cookie
+            authUtils.storeCookie("accesstoken", data.accesstoken)
+            authUtils.storeCookie("refreshtoken", data.refreshtoken)
 
-            // send token to backend
+            //redirect user to cpanel (user's dashboard)
             setTimeout(() => {
-                sendToken()
-            }, time3)
-
+                router.push('/cpanel')
+            }, 2000)
         }
     }, [loading])
 
@@ -76,21 +81,13 @@ export default function VerifyEmail() {
 
     return (
         <div className='auth py-[15px] px-[10px]'>
-            <div className='w-full mx-auto py-[50px] bg-color-dark-0 rounded-md text-center shadow-all-sm'>
-
+            <Card>
                 {(function () {
                     // preparing to call verify api
                     if (loading) {
                         return (
-                            <div >
-                                {/* title */}
-                                <Title>WELCOME BACK!</Title>
-
-                                <Subtitle>Wait while we verify your email</Subtitle>
-
-                                <div className="img" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                    <img style={{ width: '50px', height: '50px%' }} src="/verify-email1.gif" />
-                                </div>
+                            <div>
+                                <Loading title={"WELCOME BACK!"} subtitle={"Wait while we verify your email"} />
                             </div>
                         )
                     }
@@ -98,13 +95,7 @@ export default function VerifyEmail() {
                     // start calling verify api
                     if (!loading && !fetched.status) {
                         return <>
-                            <Title>WELCOME BACK!</Title>
-
-                            <Subtitle>Almost there!</Subtitle>
-
-                            <div className="img" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                                <img style={{ width: '50px', height: '50px%' }} src="/verify-email2.gif" />
-                            </div>
+                            <Loading title={"WELCOME BACK!"} subtitle={"Almost there!"} />
                         </>
                     }
 
@@ -127,23 +118,27 @@ export default function VerifyEmail() {
                                         <Title>WELCOME BACK!</Title>
 
                                         <Subtitle>{fetched.msg} Please <Link href="/auth/signin">Login</Link></Subtitle>
+
+                                        <div>
+                                            <Quotes />
+                                        </div>
                                     </>
                                 ) :
                                 (
                                     <>
-                                        <Title>WELCOME BACK!</Title>
-
-                                        <div style={{ textAlign: 'center', margin: '15px 0 15px 0', color: 'red' }}>{fetched.msg}</div>
+                                        <div style={{ textAlign: 'center', margin: '15px 0 15px 0', color: 'red', fontSize: '1.3rem' }}>{fetched.msg}</div>
 
                                         <div className="img" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                             <img style={{ width: '50px', height: '50px%' }} src="/404-3.png" />
+                                        </div>
+                                        <div style={{ margin: '10px' }}>
+                                            <Quotes />
                                         </div>
                                     </>
                                 )
                     }
                 }())}
-
-            </div>
+            </Card>
         </div>
     )
 }

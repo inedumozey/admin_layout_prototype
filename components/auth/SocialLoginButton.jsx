@@ -1,32 +1,56 @@
 import React from 'react';
-import Link from 'next/link'
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_BASE_URL;
+import Oauth from '@mozeyinedu/oauth'
+const oauth = new Oauth()
 
-export default function SocialLoginButton({ type = 'signin' }) {
-    const url = type == 'signup' ? `${BASE_URL}/auth/signup` : `${BASE_URL}/auth/signin`;
+export default function SocialLoginButton({ type = '' }) {
+
+    const googleLogin = () => {
+        oauth.google.open_consent_screen({
+            client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
+            redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI
+        })
+
+        // save type and provider on local storage
+        localStorage.setItem('type', type)
+        localStorage.setItem('provider', 'google')
+    }
+
+    const githubLogin = () => {
+        oauth.github.open_consent_screen({
+            client_id: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+            redirect_uri: process.env.NEXT_PUBLIC_REDIRECT_URI
+        })
+
+        // save type and provider on local storage
+        localStorage.setItem('type', type)
+        localStorage.setItem('provider', 'github')
+    }
 
     const socials = [
         {
             title: 'Google',
-            url: url + '/google',
-            img: "/google.png"
+            img: "/google.png",
+            provider: 'google',
+            click: () => googleLogin()
         },
         {
-            title: 'Twitter',
-            url: url + '/twitter',
-            img: "/twitter.png"
+            title: 'Github',
+            img: "/github.png",
+            provider: 'github',
+            click: () => githubLogin()
         }
     ]
     return (
         <div>
-            <div className='flex justify-center items-center gap-10'>
+
+            <div className='flex justify-center items-center gap-1'>
                 {
                     socials?.map((social, i) => {
                         return (
-                            <Link key={i} href={social.url} className='border-1 border-[#cbcbcb] flex select-none items-center justify-center shadow-md p-[5px] rounded-[5px] text-[1.2rem] transition duration-[.3s] cursor-pointer no-underline font-[530] flex-1 hover:bg-color-dark-0'>
+                            <div key={i} onClick={social.click} className='border-1 border-[#cbcbcb] flex select-none items-center justify-center shadow-md p-[5px] rounded-[5px] text-[1.2rem] transition duration-[.3s] cursor-pointer no-underline font-[530] flex-1 hover:bg-color-dark-0'>
                                 <img className='h-[25px] w-[25px]' src={social.img} />
                                 <span className='ml-[3px]'>{social.title}</span>
-                            </Link>
+                            </div>
                         )
                     })
                 }
@@ -39,3 +63,4 @@ export default function SocialLoginButton({ type = 'signin' }) {
         </div>
     )
 }
+

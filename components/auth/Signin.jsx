@@ -9,6 +9,7 @@ import axios from 'axios'
 import Spinner from '../utils/Spinner';
 import Alart from '../utils/Alart';
 import SocialLoginButton from './SocialLoginButton';
+import authUtils from './utils';
 
 const p_icon_style = 'group-focus-within:text-color-blue-3 text-color-blue-4 absolute right-0 w-[30px] h-full flex justify-center items-center rounded-tr-md rounded-br-md top-0'
 
@@ -54,9 +55,15 @@ export default function Signup() {
                     // save user email on local storage incase he wants to resend link
                     localStorage.setItem('email', data.email)
                     data.token ? localStorage.setItem('token', data.token) : ''
-                }, 3000)
+                }, 1000)
             }
             else {
+
+                // save tokens on cookie
+                authUtils.storeCookie("accesstoken", data.accesstoken)
+                authUtils.storeCookie("refreshtoken", data.refreshtoken)
+
+                //redirect user to cpanel (user's dashboard)
                 setTimeout(() => {
                     router.push('/cpanel')
                 }, 2000)
@@ -72,7 +79,7 @@ export default function Signup() {
                 setMsg({ msg: err.response.data.msg, status: err.response.data.status })
             }
             else {
-                setMsg({ msg: err.message, status: err.message })
+                setMsg({ msg: err.message, status: false })
             }
             setSending(false);
         }
@@ -87,7 +94,7 @@ export default function Signup() {
             <form onSubmit={submit} className='relative m-auto max-w-[650px] min-w-[300px] w-[98%] md:px-20 py-10'>
 
                 {/* login with google and other social medial buttons */}
-                <SocialLoginButton />
+                <SocialLoginButton type="signin" />
 
                 {/* Error message */}
                 {
