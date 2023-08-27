@@ -5,7 +5,7 @@ import Cookies from 'js-cookie';
 import { useRouter } from "next/router";
 const isLoggedIn = Cookies.get('refreshtoken')
 
-export default function index() {
+export default function Index() {
     const router = useRouter()
 
     useEffect(() => {
